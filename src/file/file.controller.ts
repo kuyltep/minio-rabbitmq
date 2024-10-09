@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
 import { FileService } from './file.service';
 import { FileUploadDto } from './dto/file.body.dto';
 
@@ -13,5 +13,10 @@ export class FileController {
   @Get('/list')
   async getListOfObjects() {
     return this.fileService.getListOfObjectsMinio();
+  }
+
+  @Delete('/:id')
+  async deleteFile(@Param('id') id: string) {
+    return this.fileService.deleteFileFromMinio(id);
   }
 }

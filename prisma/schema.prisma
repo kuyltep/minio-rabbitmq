@@ -1,0 +1,53 @@
+
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Scope {
+  PUBLIC
+  PRIVATE
+  LIMITED
+}
+
+model User {
+  id String @id @unique @default(uuid())
+  login String @unique
+  password String
+  firstName String?
+  lastName String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+  files File[]
+  groups Group[] @relation(name: "user-group")
+  grups_scopes Group[] @relation(name: "users-scopes")
+  @@map("user")
+}
+
+model File {
+  id String @id @unique @default(uuid())
+  name String
+  createdAt DateTime @default(now())
+  url String?
+  user User @relation(map: "user_id", fields: [id], references: [id], onDelete: Cascade)
+  user_id Int
+  group Group? @relation(map: "group_id", fields: [id], references: [id], onDelete: SetDefault)
+  group_id Int?
+  @@map("file")
+}
+
+model Group {
+  id String @id @unique @default(uuid())
+  name String
+  description String?
+  user User @relation(name: "user-group", fields: [id], references: [id], onDelete: Cascade)
+  scope Scope @default(PRIVATE)
+  user_id Int
+  files File[]
+  users_scope User[] @relation(name: "users-scopes")
+}
